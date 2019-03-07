@@ -168,8 +168,8 @@ class ConvertBnn:
                 a = self.net_model.params[param_layers[i+2].name][0].data
                 b = self.net_model.params[param_layers[i+2].name][1].data
                 for k in xrange(channels):
-                    self.dest_model.params[param_layers[i].name][0].data[k] = self.net_model.params[param_layers[i].name][0].data[k] * a[k] / std[k]
-                    self.dest_model.params[param_layers[i].name][1].data[k] = self.dest_model.params[param_layers[i].name][1].data[k] * a[k] / std[k] - a[k] * mean[k] / std[k] + b[k] 
+                    self.dest_model.params[param_layers[i].name][0].data[k] = np.nan_to_num(self.net_model.params[param_layers[i].name][0].data[k] * a[k] / std[k])
+                    self.dest_model.params[param_layers[i].name][1].data[k] = np.nan_to_num(self.dest_model.params[param_layers[i].name][1].data[k] * a[k] / std[k] - a[k] * mean[k] / std[k] + b[k]) 
             elif param_layers[i].type == 'Scale':
                 channels = self.net_model.params[param_layers[i-1].name][0].num
                 scale = self.net_model.params[param_layers[i-1].name][2].data[0]

@@ -6,14 +6,11 @@ import copy
 import os
 from sys import path
 import numpy as np
-import google.protobuf as pb
- 
-path.append('/Users/kkwang/work/caffe/python/')
+from google.protobuf import text_format
 import argparse
- 
 import caffe
 import caffe.proto.caffe_pb2 as cp
- 
+path.append('/root/caffe/python/') 
 caffe.set_mode_cpu()
 layer_type = ['Convolution', 'InnerProduct']
 bnn_type = ['BatchNorm', 'Scale']
@@ -23,27 +20,20 @@ EPS = 1e-6
 def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='convert prototxt to prototxt without batch normalization')
-    parser.add_argument('--model', dest='caffe_config_filename',
+    parser.add_argument('--model', 
                         help='prototxt file',
-                        default="./models/deploy_68_new.prototxt", 
+                        default="", 
                         type=str)
-    parser.add_argument('--weights', dest='caffe_weights_filename',
+    parser.add_argument('--weights', 
                         help='weights file',
-                        default="./models/vgg_68_new.caffemodel", 
+                        default="", 
                         type=str)
-    parser.add_argument('--merged-model',dest='caffe_without_bn_config_filename',
-                        help='mobile config file',
-                        default="./models/result.prototxt",
+    parser.add_argument('--merged-model',
+                        default="",
                         type=str)
-    parser.add_argument('--merged-weights',dest='caffe_without_bn_weight_filename',
-                        help='mobile weights file',
-                        default="./models/result.caffemodel",
+    parser.add_argument('--merged-weights',
+                        default="",
                         type=str)
- 
-    #if len(sys.argv) == 1:
-    #    parser.print_help()
-    #    sys.exit(1)
-    #
     args = parser.parse_args()
     return args
  
@@ -116,7 +106,7 @@ class ConvertBnn:
     def get_netparameter(self, model):
         with open(model) as f:
             net = cp.NetParameter()
-            pb.text_format.Parse(f.read(), net)
+            text_format.Parse(f.read(), net)
             return net
  
     def convert(self):
@@ -191,5 +181,5 @@ class ConvertBnn:
  
 if __name__ == '__main__':
     args = parse_args()
-    cb = ConvertBnn(args.caffe_config_filename,args.caffe_weights_filename,args.caffe_without_bn_config_filename,args.caffe_without_bn_weight_filename)
+    cb = ConvertBnn(args.model, args.weights, args.merged_model, args.merged_weights)
     cb.convert()
